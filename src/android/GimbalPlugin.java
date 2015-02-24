@@ -67,9 +67,26 @@ public class GimbalPlugin extends CordovaPlugin implements ProximityListener {
 
         GimbalLogConfig.setLogLevel(GimbalLogLevel.INFO);
         GimbalLogConfig.enableFileLogging(this.cordova.getActivity().getApplicationContext());
+    }
 
-        Proximity.initialize(this.cordova.getActivity(), PROXIMITY_APP_ID, PROXIMITY_APP_SECRET);
-        Proximity.optimizeWithApplicationLifecycle(this.cordova.getActivity().getApplication());
+    @Override
+    public boolean execute (String action, final JSONArray args, CallbackContext callbackContext) throws JSONException {
+        if (action.equalsIgnoreCase("startService")) {
+            cordova.getThreadPool().execute( new Runnable() {
+                public void run() {
+                    JSONObject arguments = args.optJSONObject(0);
+                    String appId = args.optString(0)
+                    String appSecret = args.optString(1)
+
+                    Proximity.initialize(this.cordova.getActivity(), appId, appSecret);
+                    Proximity.optimizeWithApplicationLifecycle(this.cordova.getActivity().getApplication());
+                }
+            });
+
+            return true;
+        }
+
+        return false;
     }
 
     private void startProximityService() {
