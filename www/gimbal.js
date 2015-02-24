@@ -1,5 +1,5 @@
 module.exports = {
-    deviceready: function () {
-        cordova.exec(null, null,"CBGimbal", "deviceready", []);
-    }
+  startService: function (appid, appsecret, callbackurl, success, failed) {
+    exec(success, failed, 'CBGimbal', 'startService', [appid, appsecret, callbackurl]);
+  }
 };
