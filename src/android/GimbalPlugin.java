@@ -76,8 +76,8 @@ public class GimbalPlugin extends CordovaPlugin implements ProximityListener {
                     String appId = args.optString(0);
                     String appSecret = args.optString(1);
 
-                    Proximity.initialize(this.cordova.getActivity(), appId, appSecret);
-                    Proximity.optimizeWithApplicationLifecycle(this.cordova.getActivity().getApplication());
+                    Proximity.initialize(cordova.getActivity(), appId, appSecret);
+                    Proximity.optimizeWithApplicationLifecycle(cordova.getActivity().getApplication());
                 }
             });
 
