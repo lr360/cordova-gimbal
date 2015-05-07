@@ -38,8 +38,13 @@
     [self registerInitialValuesForUserDefaults];
 
     NSString* appId = [self settingForKey:@"GimbalAppId"];
+    NSLog(@"INFO: appId: %@", appId);
+
     NSString* appSecret = [self settingForKey:@"GimbalAppSecret"];
+    NSLog(@"INFO: appSecret: %@", appSecret);
+
     NSString* callbackUrl = [self settingForKey:@"GimbalCallbackUrl"];
+    NSLog(@"INFO: callbackUrl: %@", callbackUrl);
 
     [FYX setAppId:@"44dfcbbb3a3ba2fdb88faf0ba17c5f2f30da0e714072ba24880cdafc5c15625d"
         appSecret:@"b1a923e427ca1cabf915005dfba2ff3ec847dfb191181797a115127d2f18ca93"
