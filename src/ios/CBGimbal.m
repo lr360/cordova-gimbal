@@ -14,33 +14,50 @@
 
 @property NSMutableArray *transmitters;
 @property FYXVisitManager *visitManager;
+@property BOOL isdeviceready;
 
 @end
 
 @implementation CBGimbal
 
-- (void)startService:(CDVInvokedUrlCommand*)command
+- (id)settingForKey:(NSString*)key
 {
-    NSString *appId = [[command arguments] objectAtIndex:0];
-    NSString *appSecret = [[command arguments] objectAtIndex:1];
-    NSString *callbackUrl = [[command arguments] objectAtIndex:2];
+    return [self.commandDelegate.settings objectForKey:[key lowercaseString]];
+}
 
-    [FYX setAppId:appId
-        appSecret:appSecret
-      callbackUrl:callbackUrl];
+- (void) deviceready:(CDVInvokedUrlCommand*)command
+{
+    NSLog(@"INFO: Device ready now!");
+    _isdeviceready = YES;
+}
 
-    [FYX startService:self];
+- (id) initWithWebView:(UIWebView*)theWebView
+{
+    self = [super initWithWebView:theWebView];
 
-    self.visitManager = [FYXVisitManager new];
-    self.visitManager.delegate = self;
-    [self.visitManager start];
+    [self registerInitialValuesForUserDefaults];
 
+    NSString* appId = [self settingForKey:@"GimbalAppId"];
+    NSString* appSecret = [self settingForKey:@"GimbalAppSecret"];
+    NSString* callbackUrl = [self settingForKey:@"GimbalCallbackUrl"];
+
+    [FYX setAppId:@"44dfcbbb3a3ba2fdb88faf0ba17c5f2f30da0e714072ba24880cdafc5c15625d"
+        appSecret:@"b1a923e427ca1cabf915005dfba2ff3ec847dfb191181797a115127d2f18ca93"
+      callbackUrl:@"comfidemappsdemomobile://fidemfans"];
     [FYXLogging setLogLevel:FYX_LOG_LEVEL_INFO];
+
     [FYX startService:self];
 
-    self._startCallbackId = command.callbackId;
+    if ([self isProximityEnabled])
+    {
+        NSLog(@"INFO: Proximity is enabled");
+    }
+    else
+    {
+        NSLog(@"ERROR: Proximity not enabled!!!");
+    }
 
-    self.lastAlertSent = nil;
+    return self;
 }
 
 - (void)dealloc
@@ -52,6 +69,48 @@
 {
     return [[NSUserDefaults standardUserDefaults] boolForKey:@"fyx_service_started_key"];
 }
+
+- (void)registerInitialValuesForUserDefaults {
+
+    // Get the path of the settings bundle (Settings.bundle)
+    NSString *settingsBundlePath = [[NSBundle mainBundle] pathForResource:@"Settings" ofType:@"bundle"];
+    if (!settingsBundlePath) {
+        NSLog(@"ERROR: Unable to locate Settings.bundle within the application bundle!");
+        return;
+    }
+
+    // Get the path of the settings plist (Root.plist) within the settings bundle
+    NSString *settingsPlistPath = [[NSBundle bundleWithPath:settingsBundlePath] pathForResource:@"Root" ofType:@"plist"];
+    if (!settingsPlistPath) {
+        NSLog(@"ERROR: Unable to locate Root.plist within Settings.bundle!");
+        return;
+    }
+
+    // Create a new dictionary to hold the default values to register
+    NSMutableDictionary *defaultValuesToRegister = [NSMutableDictionary new];
+
+    // Iterate over the preferences found in the settings plist
+    NSArray *preferenceSpecifiers = [[NSDictionary dictionaryWithContentsOfFile:settingsPlistPath] objectForKey:@"PreferenceSpecifiers"];
+    for (NSDictionary *preference in preferenceSpecifiers) {
+
+        NSString *key = [preference objectForKey:@"Key"];
+        id defaultValueObject = [preference objectForKey:@"DefaultValue"];
+
+        if (key && defaultValueObject) {
+            // If a default value was found, add it to the dictionary
+            [defaultValuesToRegister setObject:defaultValueObject forKey:key];
+        }
+    }
+
+    // Register the initial values in UserDefaults that were found in the settings bundle
+    if (defaultValuesToRegister.count > 0) {
+        NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+        [userDefaults registerDefaults:defaultValuesToRegister];
+        [userDefaults synchronize];
+    }
+}
+
+#pragma mark - FYX Delegate methods
 
 - (void)serviceStarted
 {
@@ -68,8 +127,6 @@
     [self.visitManager startWithOptions:@{FYXVisitOptionDepartureIntervalInSecondsKey:@15,
                                           FYXSightingOptionSignalStrengthWindowKey:@(FYXSightingOptionSignalStrengthWindowNone)}];
 }
-
-#pragma mark - FYX Delegate methods
 
 - (void)startServiceFailed:(NSError *)error
 {
@@ -118,6 +175,7 @@
    transmitter.lastSighted = updateTime;
 
    [self fireEvent:@"proximity" identifier:transmitter.identifier name:transmitter.name rssi:RSSI];
+
 }
 
 /**
@@ -141,6 +199,7 @@
                     event, params];
 
     [self.commandDelegate evalJs:js];
+
 }
 
 @end

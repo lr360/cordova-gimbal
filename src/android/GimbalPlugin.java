@@ -7,7 +7,6 @@ import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.PluginResult.Status;
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import android.content.Context;
 import android.graphics.Rect;
@@ -38,6 +37,9 @@ import android.widget.Toast;
 
 public class GimbalPlugin extends CordovaPlugin implements ProximityListener {
 
+    private static final String PROXIMITY_APP_ID = "5ec7d521df6a7f17c0b92dcad8b6c1e34606ef7962290459e730201e6d35b137";
+    private static final String PROXIMITY_APP_SECRET = "f7f1cb20af3d3c3f72bca28fa32ea07826bc699be91d9580e2378000d26d65f7";
+
     private final static int REQUEST_ENABLE_BT = 1;
     private static final String PROXIMITY_SERVICE_ENABLED_KEY = "proximity.service.enabled";
     private static final String TAG = GimbalPlugin.class.getSimpleName();
@@ -65,26 +67,9 @@ public class GimbalPlugin extends CordovaPlugin implements ProximityListener {
 
         GimbalLogConfig.setLogLevel(GimbalLogLevel.INFO);
         GimbalLogConfig.enableFileLogging(this.cordova.getActivity().getApplicationContext());
-    }
 
-    @Override
-    public boolean execute (String action, final JSONArray args, CallbackContext callbackContext) throws JSONException {
-        if (action.equalsIgnoreCase("startService")) {
-            cordova.getThreadPool().execute( new Runnable() {
-                public void run() {
-                    JSONObject arguments = args.optJSONObject(0);
-                    String appId = args.optString(0);
-                    String appSecret = args.optString(1);
-
-                    Proximity.initialize(cordova.getActivity(), appId, appSecret);
-                    Proximity.optimizeWithApplicationLifecycle(cordova.getActivity().getApplication());
-                }
-            });
-
-            return true;
-        }
-
-        return false;
+        Proximity.initialize(this.cordova.getActivity(), PROXIMITY_APP_ID, PROXIMITY_APP_SECRET);
+        Proximity.optimizeWithApplicationLifecycle(this.cordova.getActivity().getApplication());
     }
 
     private void startProximityService() {

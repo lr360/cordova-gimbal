@@ -1,6 +1,5 @@
-exec = require('cordova/exec');
 module.exports = {
-  startService: function (appid, appsecret, callbackurl, success, failed) {
-    exec(success, failed, 'CBGimbal', 'startService', [appid, appsecret, callbackurl]);
-  }
+    deviceready: function () {
+        cordova.exec(null, null,"CBGimbal", "deviceready", []);
+    }
 };

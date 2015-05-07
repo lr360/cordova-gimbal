@@ -24,7 +24,19 @@
         <config-file target="*-Info.plist" parent="UIBackgroundModes">
             <array>
                 <string>bluetooth-central</string>
-                <string>bluetooth-peripheral</string>
+            </array>
+        </config-file>
+
+        <config-file target="*-Info.plist" parent="CFBundleURLTypes">
+            <array>
+                <dict>
+                    <key>CFBundleTypeRole</key>
+                    <string>Editor</string>
+                    <key>CFBundleURLSchemes</key>
+                    <array>
+                        <string>fidemfans</string>
+                    </array>
+                </dict>
             </array>
         </config-file>
 
@@ -32,6 +44,8 @@
         <source-file src="src/ios/CBGimbal.m"/>
         <header-file src="src/ios/Transmitter.h"/>
         <source-file src="src/ios/Transmitter.m"/>
+
+        <resource-file src="src/ios/Settings.bundle" />
 
         <framework src="libz.dylib"/>
         <framework src="lib/ios/NetworkServices.embeddedframework/NetworkServices.framework" custom="true"/>
@@ -52,7 +66,7 @@
 
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="CBGimbal">
-                <param name="android-package" value="com.gimbal.GimbalPlugin"/>
+                <param name="android-package" value="com.gimbal.GimbalPlugin" />
             </feature>
         </config-file>
 
@@ -63,25 +77,25 @@
             <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
             <uses-permission android:name="android.permission.BLUETOOTH"/>
             <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
-            <uses-feature android:name="android.hardware.bluetooth_le" android:required="true"/>
+            <uses-feature android:name="android.hardware.bluetooth_le" android:required="true" />
         </config-file>
 
         <config-file target="AndroidManifest.xml" parent="/manifest/application">
             <service android:name="com.gimbal.service.ProximityService" android:exported="false">
                 <intent-filter>
-                    <action android:name="com.fidemapps.demo.mobile"/>
+                    <action android:name="com.fidemapps.demo.mobile" />
                 </intent-filter>
             </service>
         </config-file>
 
-        <source-file src="src/android/libs/android-dev-logging.jar" target-dir="libs/"/>
-        <source-file src="src/android/libs/gimbal-proximity.jar" target-dir="libs/"/>
-        <source-file src="src/android/libs/spring-android-core-1.0.1.RELEASE.jar" target-dir="libs/"/>
-        <source-file src="src/android/libs/spring-android-rest-template-1.0.1.RELEASE.jar" target-dir="libs/"/>
+        <source-file src="src/android/libs/android-dev-logging.jar" target-dir="libs/" />
+        <source-file src="src/android/libs/gimbal-proximity.jar" target-dir="libs/" />
+        <source-file src="src/android/libs/spring-android-core-1.0.1.RELEASE.jar" target-dir="libs/" />
+        <source-file src="src/android/libs/spring-android-rest-template-1.0.1.RELEASE.jar" target-dir="libs/" />
 
-        <source-file src="src/android/GimbalPlugin.java" target-dir="src/com/gimbal"/>
-        <source-file src="src/android/VisitManagerHandler.java" target-dir="src/com/gimbal"/>
-        <source-file src="src/android/TransmitterAttributes.java" target-dir="src/com/gimbal"/>
+        <source-file src="src/android/GimbalPlugin.java" target-dir="src/com/gimbal" />
+        <source-file src="src/android/VisitManagerHandler.java" target-dir="src/com/gimbal" />
+        <source-file src="src/android/TransmitterAttributes.java" target-dir="src/com/gimbal" />
 
     </platform>
 
